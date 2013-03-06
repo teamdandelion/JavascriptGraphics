@@ -11,27 +11,58 @@ var angularOffset = 0;
 var stepSize = Math.PI * 2 / nPoints;
 var list_of_points = [];
 
-function Point(sym, x, y, z, id){
+
+function Circle(sym, x, y, radius, nPoints, id, color){
 	this.x = x;
 	this.y = y;
-	this.z = z;
+	this.radius = radius;
+	this.nPoints = nPoints;
+	this.id = id;
+	this.color = color;
+	this.points = [];
+	this.stepSize = 2 * Math.PI / this.nPoints;
+
+	for (var i=0; i<nPoints; i++){
+		var newid = this.id + '.' + i;
+		var newPoint = new Point(sym, 0, 0, newid, 'black');
+		this.points.push(newPoint);
+	}
+
+	this.move = function(newx, newy, angle){
+		this.x = newx;
+		this.y = newy;
+		this.drawPoints(angle);
+	};
+
+	this.drawPoints = function(angle){
+		for (var i=0; i<nPoints; i++){
+			var a, px, py;
+			a = angle + stepSize * i;
+			px = this.x + Math.cos(a) * radius;
+			py = this.y + Math.sin(a) * radius;
+			this.points[i].move(px, py);
+		}
+	};
+};
+
+function Point(sym, x, y, id, color){
 	this.id = id;
 	document.write('<b id="' + id + '">' + sym +'</b>');
-	console.log('<b id="' + id + '">' + sym +'</b>');
 	s = document.getElementById(this.id).style;
-	s.left = this.x;
-	s.top = this.y;
-	s.color = 'gold';
+	s.color = color;
+
 
 	this.move = function(newx, newy){
 		this.x = newx;
 		this.y = newy;
+		this.draw();
 	};
 	this.draw = function(){
 		s = document.getElementById(this.id).style;
 		s.left = this.x;
 		s.top = this.y;
 	};
+	this.move(x,y);
 };
 
 // from stackoverflow
@@ -42,44 +73,24 @@ var w = window,
     xwindow = w.innerWidth || e.clientWidth || g.clientWidth,
     ywindow = w.innerHeight|| e.clientHeight|| g.clientHeight;
 
-for (var i=0; i<nPoints; i++){
-	var newPoint = new Point('*', 0, 0, 0, i);
-	list_of_points.push(newPoint);
-}
+
+var myCircle = new Circle('*', 50, 50, 100, 6, 0, 'gold');
+
 
 
 
 
 function draw_and_move()
 {
-	for (var a = 0; a<nPoints; a++){
-		var angle = a * stepSize + angularOffset;
+	circleX = Math.max(radius, xpos);
+	circleY = Math.max(radius, ypos);
+	circleX = Math.min(xwindow-radius-20, circleX);
+	circleY = Math.min(ywindow-radius-20, circleY);
 
-		circleX = Math.max(radius, xpos);
-		circleY = Math.max(radius, ypos);
-		circleX = Math.min(xwindow-radius-20, circleX);
-		circleY = Math.min(ywindow-radius-20, circleY);
-
-		var x = circleX + Math.cos(angle) * radius;
-		var y = circleY + Math.sin(angle) * radius;
-		list_of_points[a].move(x,y);
-		list_of_points[a].draw();
-	}
+	myCircle.move(circleX, circleY, angularOffset);
 	angularOffset += speed;
-
 }
 
-function addPoint() {
-	nPoints++;
-	stepSize = Math.PI * 2 / nPoints;
-};
-
-function removePoint(){
-	nPoints--;
-	s = document.getElementById('l' + nPoints).style;
-	s.color = '#999999';
-	stepSize = Math.PI * 2 / nPoints;
-}
 
 
 function setRadius(r){
