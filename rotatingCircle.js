@@ -1,14 +1,15 @@
+// circle parameters
+var symbol = '*'; // what character is used
+var nPoints = 6; 
 var radius = 100;
-var angularOffset = 0;	
-var stepSize = 0;
-var xpos=0, ypos=0;
-var xoff, yoff;
-var nPoints = 6;
-var stepSize = Math.PI * 2 / nPoints;
-var symbol = '*';
-var speed = .01;
-var list_of_points = [];
+var speed = .01; // in radians per iteration
 
+//useful globals
+var xpos=0, ypos=0; // tracks mouse location
+var circleX, circleY;     // center of the circle
+var angularOffset = 0;	
+var stepSize = Math.PI * 2 / nPoints;
+var list_of_points = [];
 
 function Point(sym, x, y, z, id){
 	this.x = x;
@@ -54,13 +55,13 @@ function draw_and_move()
 	for (var a = 0; a<nPoints; a++){
 		var angle = a * stepSize + angularOffset;
 
-		var xoff = Math.max(radius, xpos);
-		var yoff = Math.max(radius, ypos);
-		xoff = Math.min(xwindow-radius-20, xoff);
-		yoff = Math.min(ywindow-radius-20, yoff);
+		circleX = Math.max(radius, xpos);
+		circleY = Math.max(radius, ypos);
+		circleX = Math.min(xwindow-radius-20, circleX);
+		circleY = Math.min(ywindow-radius-20, circleY);
 
-		var x = xoff + Math.cos(angle) * radius;
-		var y = yoff + Math.sin(angle) * radius;
+		var x = circleX + Math.cos(angle) * radius;
+		var y = circleY + Math.sin(angle) * radius;
 		list_of_points[a].move(x,y);
 		list_of_points[a].draw();
 	}
