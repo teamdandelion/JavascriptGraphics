@@ -1,0 +1,100 @@
+<html>
+<head>
+<title> Dan draws a circle </title>
+<style type="text/css">
+body{background:#999999;color:#FF0;height:100%;margin:0;padding:0;width:100%;}
+b{position:absolute;}
+a{color:gold;}
+a:hover{color:#FF0;}
+address{bottom:10px;font-family:Georgia;font-style:normal;position:absolute;right:10px;text-align:right;}
+</style>
+</head>
+<body onmousemove="xpos = event.clientX; ypos=event.clientY;">
+<script type="text/javascript">
+var radius = 100;
+var angularOffset = 0;	
+var stepSize = 0;
+var xoff, yoff;
+var nPoints = 6;
+var stepSize = Math.PI * 2 / nPoints;
+var symbol = '*';
+var speed = .01;
+
+// from stackoverflow
+var w = window,
+    d = document,
+    e = d.documentElement,
+    g = d.getElementsByTagName('body')[0],
+    xwindow = w.innerWidth || e.clientWidth || g.clientWidth,
+    ywindow = w.innerHeight|| e.clientHeight|| g.clientHeight;
+
+for (var i=0; i<100; i++){
+	document.write('<b id="l' + i + '">' + symbol + '</b>');
+	s = document.getElementById('l' +i);
+	s.color = '#999999';
+}
+
+
+
+
+function draw_and_move()
+{
+
+	for (var a = 0; a<nPoints; a++){
+		var angle = a * stepSize + angularOffset;
+
+		var xoff = Math.max(radius, xpos);
+		var yoff = Math.max(radius, ypos);
+		xoff = Math.min(xwindow-radius-20, xoff);
+		yoff = Math.min(ywindow-radius-20, yoff);
+
+		var x = xoff + Math.cos(angle) * radius;
+		var y = yoff + Math.sin(angle) * radius;
+		s = document.getElementById('l' + a).style;
+		s.left = x;
+		s.top = y;
+		s.color = 'gold';
+	}
+	angularOffset += speed;
+
+}
+
+function addPoint() {
+	nPoints++;
+	stepSize = Math.PI * 2 / nPoints;
+};
+
+function removePoint(){
+	nPoints--;
+	s = document.getElementById('l' + nPoints).style;
+	s.color = '#999999';
+	stepSize = Math.PI * 2 / nPoints;
+}
+
+
+function setRadius(r){
+	radius = r;
+}
+
+function setSpeed(v){
+	speed = v / 10000.0;
+}
+
+setInterval('draw_and_move()',1);
+</script>
+
+
+
+<br>
+<button onclick="addPoint();">addPoint</button>
+<button onclick="removePoint();">removePoint</button>
+
+<br><br>
+Radius: 
+<br>
+<input type="range" name="Radius" min="30" max="300" onchange="setRadius(this.value)">
+<br>
+
+Speed: <br> <input type="range" name="Speed" min="10" max="200" onchange="setSpeed(this.value)">
+</body>
+</html>
