@@ -1,0 +1,28 @@
+<html>
+<head>
+<title> Dan draws a circle </title>
+<style type="text/css">
+body{background:#999999;color:#FF0;height:100%;margin:0;padding:0;width:100%;}
+b{position:absolute;}
+a{color:gold;}
+a:hover{color:#FF0;}
+address{bottom:10px;font-family:Georgia;font-style:normal;position:absolute;right:10px;text-align:right;}
+</style>
+</head>
+<body onmousemove="xpos = event.clientX; ypos=event.clientY;">
+<script src="Shapes3D.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+var myCircle = new Circle3D('*', 200, 200, 0, 100, 6, 0, 'gold', .01);
+console.log('circle made');
+
+
+
+setInterval('myCircle.rotate()',1);
+</script>
+
+
+
+
+</body>
+</html>
