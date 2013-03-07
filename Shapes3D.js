@@ -11,10 +11,13 @@ function Point3D(sym, x, y, z, id, color){
 	s.color = color;
 
 	this.move = function(newx, newy, newz){
-		this.x = newx;
-		this.y = newy;
-		this.z = newz;
 		this.pSize = this.baseSize * defaultDepth /  this.z;
+		// Set the point size based on the depth - need to work this equation out better
+		// Increasing point size tends to shift the character to the right so we
+		// will introduce a corrective factor
+		this.x = newx - this.pSize * .18;
+		this.y = newy - this.pSize * .93;
+		this.z = newz;
 		//console.log('z = ' + this.z);
 		//console.log(this.baseSize + '*' + defaultDepth + '/' + (this.z) +'=' + this.pSize);
 	};
