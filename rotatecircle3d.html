@@ -22,8 +22,14 @@ Depth:
 <script src="Shapes3D.js" type="text/javascript"></script>
 <script type="text/javascript">
 
-var myCircle = new Circle3D('x', 200, 200, 500, 100, 6, 0, 'gold', .01);
-myCircle.changeAxis(1,0,0);
+var xpos=0; ypos=0;
+
+var radius = 150;
+var originX = 400;
+var originY = 200;
+
+var myCircle = new Circle3D('.', originX, originY, 700, radius, 12, 0, 'gold', .01);
+myCircle.changeAxis(1,1,1);
 console.log('circle made');
 
 move2z = function(newz) {
@@ -31,12 +37,42 @@ move2z = function(newz) {
 	myCircle.move(200, 200, +newz);
 }
 
+orientAxis = function() {
+	var x, y, z;
+	x = xpos - originX;
+	y = ypos - originY;
+
+	if (Math.abs(x) < 30 && Math.abs(y) <30){
+		x = 0;
+		y = 0;
+		// avoid jitteryness near the origin
+	}
+
+	z = radius*radius - x*x - y*y;
+	if (z <= 0){ // the mouse is outside the circle or on the boundary, so no z component
+		z = 0;
+	} else {
+		// the mouse is inside the circle, so to put it on the surface of the sphere we need a z component
+		z = Math.sqrt(z);
+		// satisfies z = sqrt(r^2 - x^2 - y^2) equation for sphere
+	}
+	myCircle.changeAxis(x,y,z);
+};
+
+orientAndRotate = function() {
+	orientAxis();
+	myCircle.rotate();
+};
+
+myCircle.rotate();
+
+
 document.getElementById('btn').onclick = function(){
 	myCircle.logPointLocations();
 	console.log("clicked");
 }
 
-setInterval('myCircle.rotate()',10);
+setInterval('orientAndRotate();',10);
 </script>
 
 

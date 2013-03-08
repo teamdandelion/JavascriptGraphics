@@ -19,7 +19,7 @@ for (var i=0; i<10; i++){
 	document.write('<b id="' + i + '">.</b>');
 	var fsize = 14 + 2 * i;
 	s = document.getElementById(i).style;
-	s.left = 200 - fsize*.18;
+	s.left = 200 - fsize*.165;
 	s.top = 100 + 20 * i;
 	s.fontSize = fsize + 'px';
 	s.color = 'gold';
@@ -30,7 +30,7 @@ for (var i=10; i<20; i++){
 	var fsize = 14 + 2 * i;
 	s = document.getElementById(i).style;
 	s.left = 200 + 20 * i;
-	s.top = 300 - fsize*.93;
+	s.top = 300 - fsize*.85;
 	s.fontSize = fsize + 'px';
 	s.color = 'gold';
 }
@@ -41,8 +41,19 @@ for (var i=20; i<30; i++){
 	var fsize = Math.pow(2,(i-20));
 	console.log(i, fsize);
 	s = document.getElementById(i).style;
-	s.left = 200 + 30 * i;
-	s.top = 200 - fsize * .93;
+	s.left = 400 + 30 * (i-20);
+	s.top = 200 - fsize *.85;
+	s.fontSize = fsize + 'px';
+	s.color = 'gold';
+}
+
+for (var i=30; i<40; i++){
+	document.write('<b id="' + i + '">.</b>');
+	var fsize = Math.pow(2,(i-30));
+	console.log(i, fsize);
+	s = document.getElementById(i).style;
+	s.left = 300 - fsize * .165;
+	s.top = 100 + 30 * (i-30) - fsize * .6;
 	s.fontSize = fsize + 'px';
 	s.color = 'gold';
 }
