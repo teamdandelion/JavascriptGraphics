@@ -11,13 +11,18 @@ function Point3D(sym, x, y, z, id, color){
 	s.color = color;
 	s.position = 'absolute';
 
-	this.move = function(newx, newy, newz){
-		this.x = newx;
-		this.y = newy;
-		this.z = newz;
-		//console.log('z = ' + this.z);
-		//console.log(this.baseSize + '*' + defaultDepth + '/' + (this.z) +'=' + this.pSize);
+	this.move = function(x, y, z){
+		this.x = x;
+		this.y = y;
+		this.z = z;
 	};
+
+	this.relativeMove = function(xr, yr, zr){
+		this.x += xr;
+		this.y += yr;
+		this.z += zr;
+	};
+
 	this.draw = function(){
 		//console.log('drawing point');
 		// Set the point size based on the depth - need to work this equation out better
@@ -83,33 +88,24 @@ function Circle3D(sym, x, y, z, radius, nPoints, id, color, speed){
 		this.points.push(newPoint);
 	}
 
-	this.move = function(newx, newy, newz){
-		this.x = newx;
-		this.y = newy;
-		this.z = newz;
+	this.move = function(x, y, z){
+		this.x = x;
+		this.y = y;
+		this.z = z;
 	};
 
-	this.changeAxis = function(a, b, c){
-		if (a == 0 && b == 0){
-			// Catch the corner case where my algorithm won't work
-			// and also default to no-depth solution when given invalid 0,0,0 input
-			this.basis1 = [1, 0, 0];
-			this.basis2 = [0, 1, 0];
-		} else {
-			// we define two orthogonal vectors according to the following algorithm:
-			// where axis is (a,b,c)
-			// o1 = (b, -a, 0)
-			// o2 = axis x o1 = (ca, cb, -a^2 - b^2)
-			var ortho1, ortho2, n1, n2;
-			var a2 = Math.pow(a,2);
-			var b2 = Math.pow(b,2);
-			var c2 = Math.pow(c,2);
-			n1 = Math.sqrt(a2 + b2);
-			this.basis1 = [b / n1, -a / n1, 0];
-			n2 = Math.sqrt(c2 * (a2 + b2) + Math.pow(a2,2) + Math.pow(b2,2) + 2*a2*b2);
-			this.basis2 = [c * a / n2, c * b / n2, -(a2 + b2) / n2]
-		}
+	this.relativeMove = function(xr, yr, zr){
+		this.x += xr;
+		this.y += yr;
+		this.z += zr;
 	};
+
+	this.changeBasis = function(bases){
+		// needs to be an orthonormal basis for things to work properly
+		this.basis1 = bases[0];
+		this.basis2 = bases[1];
+	}
+
 
 	this.rotate = function(){
 		this.angularOffset += speed;
@@ -122,6 +118,10 @@ function Circle3D(sym, x, y, z, radius, nPoints, id, color, speed){
 			this.points[i].logLocation();
 		}
 	};
+
+	this.changeRadius = function(radius){
+		this.radius = radius;
+	}
 
 
 	this.draw = function(){
@@ -143,8 +143,8 @@ function Circle3D(sym, x, y, z, radius, nPoints, id, color, speed){
 		for (var i=0; i<nPoints; i++){
 			var angle, a, b;
 			angle = this.angularOffset + this.stepSize * i;
-			a = Math.cos(angle) * radius;
-			b = Math.sin(angle) * radius;
+			a = Math.cos(angle) * this.radius;
+			b = Math.sin(angle) * this.radius;
 			px = this.x + this.basis1[0] * a + this.basis2[0] * b;
 			py = this.y + this.basis1[1] * a + this.basis2[1] * b;
 			pz = this.z + this.basis1[2] * a + this.basis2[2] * b;
@@ -204,32 +204,35 @@ function Sphere(sym, x, y, z, radius, nPoints, nCircles, id, color, speed){
 		a /= norm;
 		b /= norm;
 		c /= norm;
+		r = this.radius; // saves some space, this.radius is kinda long
 		//console.log('a,b,c,n: ',a,b,c,norm);
-		this.topPoint.move(this.x + a * radius, this.y + b * radius, this.z + c * radius);
-		this.botPoint.move(this.x - a * radius, this.y - b * radius, this.z - c * radius);
+		this.topPoint.move(this.x + a * r, this.y + b * r, this.z + c * r);
+		this.botPoint.move(this.x - a * r, this.y - b * r, this.z - c * r);
 
+		bases = generateBasis(a,b,c);
 
 		var n = nCircles/2;
 		for (var i=0; i<nCircles; i++){
 			var depth = this.circleDepths[i];
 			this.circles[i].move(this.x + a*depth, this.y + b*depth, this.z + c*depth);
-			this.circles[i].changeAxis(a,b,c);
+			this.circles[i].changeBasis(bases);
 		}
 	};
 
-/*	this.move = function(x, y, z){
+	this.move = function(x, y, z){
 		var relativeX = x - this.x;
 		var relativeY = y - this.y;
 		var relativeZ = z - this.z;
+		// use relative move so we don't need to do any axis recalculation
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		this.topPoint.relMove(relativeX, relativeY, relativeZ);
-		this.botPoint.relMove(relativeX, relativeY, relativeZ);
+		this.topPoint.relativeMove(relativeX, relativeY, relativeZ);
+		this.botPoint.relativeMove(relativeX, relativeY, relativeZ);
 		for (var i=0; i<nCircles; i++){
-			this.circles[i].relMove(relativeX, relativeY, relativeZ);
+			this.circles[i].relativeMove(relativeX, relativeY, relativeZ);
 		}
-	};*/
+	};
 
 	this.rotate = function(){
 		for (var i=0; i<this.nCircles; i++){
@@ -244,5 +247,44 @@ function Sphere(sym, x, y, z, radius, nPoints, nCircles, id, color, speed){
 			this.topPoint.draw();
 			this.botPoint.draw();
 		}
+	};
+
+	this.changeRadius = function(radius){
+		this.radius = radius;
+		var circleSpacing = Math.PI / (nCircles+1);
+		for (var i=0; i<nCircles; i++){
+			var angle = circleSpacing * (i+1);
+			// z^2 + cR^2 = r^2
+			// cR = sqrt(r^2 + z^2)
+			var cirRadius = Math.sin(angle) * this.radius;
+			var cirDepth = Math.cos(angle) * this.radius;
+			//console.log('cRadius', cRadius, 'cirRadius', cirRadius);
+			this.circles[i].changeRadius(cirRadius);
+			this.circleDepths[i] = cirDepth;
+		};
 	}
 }
+
+
+generateBasis = function(a, b, c){
+	if (a == 0 && b == 0){
+		// Catch the corner case where my algorithm won't work
+		// and also default to no-depth solution when given invalid 0,0,0 input
+		basis1 = [1, 0, 0];
+		basis2 = [0, 1, 0];
+	} else {
+		// we define two orthogonal vectors according to the following algorithm:
+		// where axis is (a,b,c)
+		// o1 = (b, -a, 0)
+		// o2 = axis x o1 = (ca, cb, -a^2 - b^2)
+		var ortho1, ortho2, n1, n2;
+		var a2 = Math.pow(a,2);
+		var b2 = Math.pow(b,2);
+		var c2 = Math.pow(c,2);
+		n1 = Math.sqrt(a2 + b2);
+		basis1 = [b / n1, -a / n1, 0];
+		n2 = Math.sqrt(c2 * (a2 + b2) + Math.pow(a2,2) + Math.pow(b2,2) + 2*a2*b2);
+		basis2 = [c * a / n2, c * b / n2, -(a2 + b2) / n2]
+	}
+	return [basis1, basis2]
+};

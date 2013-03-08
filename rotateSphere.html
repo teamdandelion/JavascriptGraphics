@@ -11,9 +11,15 @@ address{bottom:10px;font-family:Georgia;font-style:normal;position:absolute;righ
 </head>
 <body onmousemove="xpos = event.clientX; ypos=event.clientY;">
 
+Radius: 
+<br>
+<input type="range" name="Radius" min="70" max="220" value="150" onchange="changeRadius(this.value)">
+<br>
+
+
 Depth: 
 <br>
-<input type="range" name="Depth" min="5" max="800" onchange="move2z(this.value)">
+<input type="range" name="Radius" min="100" max="700" value="300" onchange="move2z(this.value)">
 <br>
 <br><br>
 
@@ -35,11 +41,11 @@ var radius = 150;
 var originX = Math.floor(xwindow / 2);
 var originY = Math.floor(ywindow / 2);
 var originZ = 300;
-var nCircles = 9;
-var nPoints = 12;
+var nCircles = 20;
+var nPoints = 20;
 var sym = '.';
 
-var mySphere = new Sphere(sym, originX, originY, originZ, radius, nPoints, nCircles, 0, 'gold', .01);
+var mySphere = new Sphere(sym, originX, originY, originZ, radius, nPoints, nCircles, 0, 'gold', .0001);
 //mySphere.changeAxis(1,0,0);
 console.log('sphere made');
 
@@ -47,6 +53,7 @@ changeCursor = function(){
 	x = xpos - originX;
 	y = ypos - originY;
 	r = radius + 25;
+	console.log(r, x*x + y*y - r*r);
 	if (x*x + y*y <= r*r){
 		document.body.style.cursor = 'none';
 	} else {
@@ -56,8 +63,13 @@ changeCursor = function(){
 
 move2z = function(newz) {
 	console.log('new z is ' + newz);
-	mySphere.move(200, 200, +newz);
-}
+	mySphere.move(originX, originY, +newz);
+};
+
+changeRadius = function(newRadius){
+	radius = +newRadius;
+	mySphere.changeRadius(radius);
+};
 
 orientAxis = function() {
 	var x, y, z;
@@ -96,7 +108,7 @@ document.getElementById('btn').onclick = function(){
 	console.log("clicked");
 }
 
-setInterval('tick();',30);
+setInterval('tick();',10);
 </script>
 
 
