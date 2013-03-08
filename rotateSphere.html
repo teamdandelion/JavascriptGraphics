@@ -24,9 +24,16 @@ Depth:
 
 var xpos=0; ypos=0;
 
-var radius = 120;
-var originX = 400;
-var originY = 200;
+var w = window,
+    d = document,
+    e = d.documentElement,
+    g = d.getElementsByTagName('body')[0],
+    xwindow = w.innerWidth || e.clientWidth || g.clientWidth,
+    ywindow = w.innerHeight|| e.clientHeight|| g.clientHeight;
+
+var radius = 150;
+var originX = Math.floor(xwindow / 2);
+var originY = Math.floor(ywindow / 2);
 var originZ = 300;
 var nCircles = 9;
 var nPoints = 12;
@@ -60,11 +67,11 @@ orientAxis = function() {
 		z = Math.sqrt(z);
 		// satisfies z = sqrt(r^2 - x^2 - y^2) equation for sphere
 	}
-	mySphere.changeAxis(x,y,z);
+	mySphere.changeAxis(x,y,-z);
 };
 
 orientAndRotate = function() {
-	//orientAxis();
+	orientAxis();
 	mySphere.rotate();
 	mySphere.draw();
 };
@@ -77,7 +84,7 @@ document.getElementById('btn').onclick = function(){
 	console.log("clicked");
 }
 
-setInterval('orientAndRotate();',10);
+setInterval('orientAndRotate();',30);
 </script>
 
 

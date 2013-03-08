@@ -1,5 +1,5 @@
 
-var defaultDepth = 1000;
+var defaultDepth = 700;
 
 
 function Point3D(sym, x, y, z, id, color){
@@ -9,6 +9,7 @@ function Point3D(sym, x, y, z, id, color){
 	document.write('<b id="' + id + '">' + sym +'</b>');
 	s = document.getElementById(this.id).style;
 	s.color = color;
+	s.position = 'absolute';
 
 	this.move = function(newx, newy, newz){
 		this.x = newx;
@@ -26,28 +27,29 @@ function Point3D(sym, x, y, z, id, color){
 		pSize = this.baseSize * defaultDepth / this.z;
 
 		// TODO: resize it according to point size
-		s.left = this.x - this.pSize * .165;
-		s.top  = this.y - this.pSize * .850;
+		s.left = this.x - pSize * .165;
+		s.top  = this.y - pSize * .850;
 		s.fontSize = pSize + 'px';
 		sf = Math.pow(defaultDepth / this.z, 3);
 		//c = 50 * sf;
 		//if (c >255) c = 255;
 
-		 if (this.z >= 360) {c = 0;} 
-		 else if (this.z >= 240) {c = 125;}
-		 else { c = 255;} 
+		 //if (this.z >= 360) {c = 0;} 
+		 //else if (this.z >= 240) {c = 125;}
+		 //else { c = 255;} 
 
 		//console.log(this.z, c);
 
-		//c = ((-180.0)/360) * this.z + 255;
+		o = ((-180.0)/360) * this.z + 280;
 
-		//if (c > 255) c = 255;
-		//if (c < 0 ) c = 0;
 
-		s.color = 'rgb(' + c + ', ' + c + ', 0)';
-		console.log('c, z', c, this.z);
+		if (o > 255) o = 255;
+		if (o < 0  ) o = 0;
+		o = Math.floor(o);
+ 
+		s.color = 'rgb(' + o + ', ' + o + ', 0)';
 		//console.log('fontSize set to ' + this.pSize + 'px');
-		//s.zIndex = this.z; TODO - implement this
+		s.zIndex = Math.floor(700-this.z); //TODO - implement this
 	};
 	this.logLocation = function(){
 		console.log(this.x, this.y, this.z, this.pSize);
@@ -204,13 +206,13 @@ function Sphere(sym, x, y, z, radius, nPoints, nCircles, id, color, speed){
 		c /= norm;
 		//console.log('a,b,c,n: ',a,b,c,norm);
 		this.topPoint.move(this.x + a * radius, this.y + b * radius, this.z + c * radius);
-		this.botPoint.move(this.x - a * radius, this.y - b * radius, this.z + c * radius);
+		this.botPoint.move(this.x - a * radius, this.y - b * radius, this.z - c * radius);
 
 
 		var n = nCircles/2;
 		for (var i=0; i<nCircles; i++){
 			var depth = this.circleDepths[i];
-			this.circles[i].move(this.x + a*depth, this.y + b*depth, this.z + b*depth);
+			this.circles[i].move(this.x + a*depth, this.y + b*depth, this.z + c*depth);
 			this.circles[i].changeAxis(a,b,c);
 		}
 	};

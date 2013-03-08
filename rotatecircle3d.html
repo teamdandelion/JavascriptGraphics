@@ -24,9 +24,19 @@ Depth:
 
 var xpos=0; ypos=0;
 
+// from stackoverflow
+var w = window,
+    d = document,
+    e = d.documentElement,
+    g = d.getElementsByTagName('body')[0],
+    xwindow = w.innerWidth || e.clientWidth || g.clientWidth,
+    ywindow = w.innerHeight|| e.clientHeight|| g.clientHeight;
+
+document.body.style.cursor='crosshair';
+
 var radius = 150;
-var originX = 400;
-var originY = 200;
+var originX = Math.floor(xwindow / 2);
+var originY = Math.floor(ywindow / 2);
 
 var myCircle = new Circle3D('.', originX, originY, 700, radius, 12, 0, 'gold', .01);
 myCircle.changeAxis(1,1,1);
