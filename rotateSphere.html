@@ -25,7 +25,9 @@ Depth:
 
 <input type="button" value="click me" id="btn">
 
-<script src="Shapes3D.js" type="text/javascript"></script>
+<script src="Point3D.js"  type="text/javascript"></script>
+<script src="Circle3D.js" type="text/javascript"></script>
+<script src="Sphere3D.js" type="text/javascript"></script>
 <script type="text/javascript">
 
 var xpos=0; ypos=0;
@@ -42,10 +44,10 @@ var originX = Math.floor(xwindow / 2);
 var originY = Math.floor(ywindow / 2);
 var originZ = 300;
 var nCircles = 20;
-var nPoints = 20;
+var nPoints = 12;
 var sym = '.';
 
-var mySphere = new Sphere(sym, originX, originY, originZ, radius, nPoints, nCircles, 0, 'gold', .0001);
+var mySphere = new Sphere(originX, originY, originZ, radius, nPoints, nCircles, 0, .0001);
 //mySphere.changeAxis(1,0,0);
 console.log('sphere made');
 
@@ -90,7 +92,7 @@ orientAxis = function() {
 		z = Math.sqrt(z);
 		// satisfies z = sqrt(r^2 - x^2 - y^2) equation for sphere
 	}
-	mySphere.changeAxis(x,y,-z);
+	mySphere.changeAxis([x,y,-z]);
 };
 
 tick = function() {
@@ -101,10 +103,10 @@ tick = function() {
 };
 
 mySphere.rotate();
+mySphere.draw();
 
 
 document.getElementById('btn').onclick = function(){
-	mySphere.logPointLocations();
 	console.log("clicked");
 }
 
