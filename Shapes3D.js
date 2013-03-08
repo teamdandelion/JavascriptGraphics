@@ -11,30 +11,48 @@ function Point3D(sym, x, y, z, id, color){
 	s.color = color;
 
 	this.move = function(newx, newy, newz){
-		this.pSize = this.baseSize * defaultDepth /  newz;
-		// Set the point size based on the depth - need to work this equation out better
-		// Increasing point size tends to shift the character to the right and down so we
-		// will introduce a corrective factor
-		this.x = newx - this.pSize * .165;
-		this.y = newy - this.pSize * .85;
+		this.x = newx;
+		this.y = newy;
 		this.z = newz;
 		//console.log('z = ' + this.z);
 		//console.log(this.baseSize + '*' + defaultDepth + '/' + (this.z) +'=' + this.pSize);
 	};
 	this.draw = function(){
-		console.log('drawing point');
+		//console.log('drawing point');
+		// Set the point size based on the depth - need to work this equation out better
+		// Increasing point size tends to shift the character to the right and down so we
+		// will introduce a corrective factor
 		s = document.getElementById(this.id).style;
+		pSize = this.baseSize * defaultDepth / this.z;
+
 		// TODO: resize it according to point size
-		s.left = this.x;
-		s.top = this.y;
-		s.fontSize = this.pSize + 'px';
+		s.left = this.x - this.pSize * .165;
+		s.top  = this.y - this.pSize * .850;
+		s.fontSize = pSize + 'px';
+		sf = Math.pow(defaultDepth / this.z, 3);
+		//c = 50 * sf;
+		//if (c >255) c = 255;
+
+		 if (this.z >= 360) {c = 0;} 
+		 else if (this.z >= 240) {c = 125;}
+		 else { c = 255;} 
+
+		//console.log(this.z, c);
+
+		//c = ((-180.0)/360) * this.z + 255;
+
+		//if (c > 255) c = 255;
+		//if (c < 0 ) c = 0;
+
+		s.color = 'rgb(' + c + ', ' + c + ', 0)';
+		console.log('c, z', c, this.z);
 		//console.log('fontSize set to ' + this.pSize + 'px');
-		// s.zIndex = this.z; TODO - implement this
+		//s.zIndex = this.z; TODO - implement this
 	};
 	this.logLocation = function(){
 		console.log(this.x, this.y, this.z, this.pSize);
 	};
-	this.move(x,y); // constructor moves it to its starting coordinate after its been made, which
+	this.move(x,y,z); // constructor moves it to its starting coordinate after its been made, which
 	// initializes this.x and this.y as well as making inital drawing
 };
 
@@ -73,8 +91,8 @@ function Circle3D(sym, x, y, z, radius, nPoints, id, color, speed){
 		if (a == 0 && b == 0){
 			// Catch the corner case where my algorithm won't work
 			// and also default to no-depth solution when given invalid 0,0,0 input
-			this.basis1 = [0, 1, 0];
-			this.basis2 = [0, 0, 1];
+			this.basis1 = [1, 0, 0];
+			this.basis2 = [0, 1, 0];
 		} else {
 			// we define two orthogonal vectors according to the following algorithm:
 			// where axis is (a,b,c)
@@ -135,6 +153,8 @@ function Circle3D(sym, x, y, z, radius, nPoints, id, color, speed){
 	};
 };
 
+function sign(x) { return x > 0 ? 1 : x < 0 ? -1 : 0; };
+
 function Sphere(sym, x, y, z, radius, nPoints, nCircles, id, color, speed){
 	this.x = x;
 	this.y = y;
@@ -147,36 +167,50 @@ function Sphere(sym, x, y, z, radius, nPoints, nCircles, id, color, speed){
 	this.circles = [];
 	this.speed = speed;
 	this.axis = [1, 0, 0];
+	this.circleDepths = [];
 
 	console.log('x,y,z,r:',x,y,z,radius);
 
-	this.topPoint = new Point3D(sym, x, y, z + radius, id + '.top', color);
-	this.botPoint = new Point3D(sym, x, y, z - radius, id + '.bot', color);
+	this.topPoint = new Point3D(sym, x + radius, y, z, id + '.top', color);
+	this.botPoint = new Point3D(sym, x - radius, y, z, id + '.bot', color);
 
-	var circleSpacing = 2 * radius / (nCircles+1);
+	var circleSpacing = Math.PI / (nCircles+1);
 	for (var i=0; i<nCircles; i++){
-		var cD = -radius + (i+1) * circleSpacing;
 		var newId = id + '.' + i;
+		var angle = circleSpacing * (i+1);
+		console.log('angle', angle);
 		// z^2 + cR^2 = r^2
 		// cR = sqrt(r^2 + z^2)
-		var cirRadius = Math.sqrt(radius * radius - cD * cD);
-		console.log('cD', cD, 'cirRadius', cirRadius);
-		var newCircle = new Circle3D(sym, x + cD, y, z, cirRadius, nPoints, newId, color, speed);
+		var cirRadius = Math.sin(angle) * this.radius;
+		var cirDepth = Math.cos(angle) * this.radius;
+		//console.log('cRadius', cRadius, 'cirRadius', cirRadius);
+		var newCircle = new Circle3D(sym, x + cirDepth, y, z, cirRadius, nPoints, newId, color, speed);
 		this.circles.push(newCircle);
-		console.log('circle ' + i + ' made. x, y,');
+		this.circleDepths.push(cirDepth);
 	};
 
+	// this.generateCircle = function(angle){
+	// 	// angle must be in range (0, 2Pi)
+	// 	var cirRadius = Math.sin(angle) * this.radius;
+	// 	var cirDepth = Math.cos(angle) * this.radius;
+
+	// }
+
+
 	this.changeAxis = function(a, b, c){
-		var scale = radius / Math.sqrt(a*a + b*b + c*c);
-		a *= scale;
-		b *= scale;
-		c *= scale;
-		this.topPoint.move(this.x + a, this.y + b, this.z + c);
-		this.botPoint.move(this.x - a, this.y - b, this.z + c);
+		var norm = Math.sqrt(a*a + b*b + c*c);
+		a /= norm;
+		b /= norm;
+		c /= norm;
+		//console.log('a,b,c,n: ',a,b,c,norm);
+		this.topPoint.move(this.x + a * radius, this.y + b * radius, this.z + c * radius);
+		this.botPoint.move(this.x - a * radius, this.y - b * radius, this.z + c * radius);
+
 
 		var n = nCircles/2;
 		for (var i=0; i<nCircles; i++){
-			this.circles[i].move(this.x + a*(i-n), this.y + b*(i-n), this.z + b*(i-n));
+			var depth = this.circleDepths[i];
+			this.circles[i].move(this.x + a*depth, this.y + b*depth, this.z + b*depth);
 			this.circles[i].changeAxis(a,b,c);
 		}
 	};
@@ -204,7 +238,9 @@ function Sphere(sym, x, y, z, radius, nPoints, nCircles, id, color, speed){
 
 	this.draw = function(){
 		for (var i=0; i<this.nCircles; i++){
-			this.circles[i].draw()
+			this.circles[i].draw();
+			this.topPoint.draw();
+			this.botPoint.draw();
 		}
 	}
 }
