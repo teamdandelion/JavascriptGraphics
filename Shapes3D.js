@@ -175,15 +175,30 @@ function Sphere(sym, x, y, z, radius, nPoints, nCircles, id, color, speed){
 		}
 	};
 
-	this.move = function(x, y, z){
-
-	}
+/*	this.move = function(x, y, z){
+		var relativeX = x - this.x;
+		var relativeY = y - this.y;
+		var relativeZ = z - this.z;
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.topPoint.relMove(relativeX, relativeY, relativeZ);
+		this.botPoint.relMove(relativeX, relativeY, relativeZ);
+		for (var i=0; i<nCircles; i++){
+			this.circles[i].relMove(relativeX, relativeY, relativeZ);
+		}
+	};*/
 
 	this.rotate = function(){
+		for (var i=0; i<this.nCircles; i++){
+			circles[i].rotate()
+		}
 
 	}
 
 	this.draw = function(){
-
+		for (var i=0; i<this.nCircles; i++){
+			circles[i].draw()
+		}
 	}
 }
