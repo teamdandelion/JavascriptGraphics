@@ -24,17 +24,21 @@ Depth:
 
 var xpos=0; ypos=0;
 
-var radius = 150;
+var radius = 120;
 var originX = 400;
 var originY = 200;
+var originZ = 700;
+var nCircles = 5;
+var nPoints = 6;
+var sym = '.';
 
-var myCircle = new Circle3D('.', originX, originY, 700, radius, 12, 0, 'gold', .01);
-myCircle.changeAxis(1,1,1);
-console.log('circle made');
+var mySphere = new Sphere(sym, originX, originY, originZ, radius, nPoints, nCircles, 0, 'gold', .01);
+//mySphere.changeAxis(1,0,0);
+console.log('sphere made');
 
 move2z = function(newz) {
 	console.log('new z is ' + newz);
-	myCircle.move(200, 200, +newz);
+	mySphere.move(200, 200, +newz);
 }
 
 orientAxis = function() {
@@ -56,25 +60,24 @@ orientAxis = function() {
 		z = Math.sqrt(z);
 		// satisfies z = sqrt(r^2 - x^2 - y^2) equation for sphere
 	}
-	myCircle.changeAxis(x,y,z);
+	//mySphere.changeAxis(x,y,z);
 };
 
 orientAndRotate = function() {
 	orientAxis();
-	myCircle.rotate();
-	myCircle.draw();
+	mySphere.rotate();
+	mySphere.draw();
 };
 
-myCircle.rotate();
-myCircle.draw();
+mySphere.rotate();
 
 
 document.getElementById('btn').onclick = function(){
-	myCircle.logPointLocations();
+	mySphere.logPointLocations();
 	console.log("clicked");
 }
 
-setInterval('orientAndRotate();',10);
+setInterval('orientAndRotate();',200);
 </script>
 
 

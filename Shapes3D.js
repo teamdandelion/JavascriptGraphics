@@ -22,6 +22,7 @@ function Point3D(sym, x, y, z, id, color){
 		//console.log(this.baseSize + '*' + defaultDepth + '/' + (this.z) +'=' + this.pSize);
 	};
 	this.draw = function(){
+		console.log('drawing point');
 		s = document.getElementById(this.id).style;
 		// TODO: resize it according to point size
 		s.left = this.x;
@@ -72,8 +73,8 @@ function Circle3D(sym, x, y, z, radius, nPoints, id, color, speed){
 		if (a == 0 && b == 0){
 			// Catch the corner case where my algorithm won't work
 			// and also default to no-depth solution when given invalid 0,0,0 input
-			this.basis1 = [1, 0, 0];
-			this.basis2 = [0, 1, 0];
+			this.basis1 = [0, 1, 0];
+			this.basis2 = [0, 0, 1];
 		} else {
 			// we define two orthogonal vectors according to the following algorithm:
 			// where axis is (a,b,c)
@@ -93,7 +94,7 @@ function Circle3D(sym, x, y, z, radius, nPoints, id, color, speed){
 	this.rotate = function(){
 		this.angularOffset += speed;
 		this.angularOffset %= 2 * Math.PI;
-		this.drawPoints();
+		//this.drawPoints();
 	};
 
 	this.logPointLocations = function(){
@@ -103,7 +104,7 @@ function Circle3D(sym, x, y, z, radius, nPoints, id, color, speed){
 	};
 
 
-	this.drawPoints = function(){
+	this.draw = function(){
 		/* 
 	recalculate the location of each point and then draw it...
 	here is the general algorithm:
@@ -140,24 +141,29 @@ function Sphere(sym, x, y, z, radius, nPoints, nCircles, id, color, speed){
 	this.z = z;
 	this.radius = radius;
 	this.nPoints = nPoints;
+	this.nCircles = nCircles;
 	this.id = id;
 	this.color = color;
 	this.circles = [];
 	this.speed = speed;
-	this.axis = [0, 0, 1];
+	this.axis = [1, 0, 0];
+
+	console.log('x,y,z,r:',x,y,z,radius);
 
 	this.topPoint = new Point3D(sym, x, y, z + radius, id + '.top', color);
 	this.botPoint = new Point3D(sym, x, y, z - radius, id + '.bot', color);
 
-	var circleSpacing = radius / nCircles;
+	var circleSpacing = 2 * radius / (nCircles+1);
 	for (var i=0; i<nCircles; i++){
-		var cZ = -radius + i * circleSpacing;
+		var cD = -radius + (i+1) * circleSpacing;
 		var newId = id + '.' + i;
 		// z^2 + cR^2 = r^2
 		// cR = sqrt(r^2 + z^2)
-		var cirRadius = Math.sqrt(radius * radius + cZ * cZ);
-		var newCircle = new Circle3D(sym, x, y, cZ+z, cirRadius, nPoints, newId, color, speed);
+		var cirRadius = Math.sqrt(radius * radius - cD * cD);
+		console.log('cD', cD, 'cirRadius', cirRadius);
+		var newCircle = new Circle3D(sym, x + cD, y, z, cirRadius, nPoints, newId, color, speed);
 		this.circles.push(newCircle);
+		console.log('circle ' + i + ' made. x, y,');
 	};
 
 	this.changeAxis = function(a, b, c){
@@ -191,14 +197,14 @@ function Sphere(sym, x, y, z, radius, nPoints, nCircles, id, color, speed){
 
 	this.rotate = function(){
 		for (var i=0; i<this.nCircles; i++){
-			circles[i].rotate()
+			this.circles[i].rotate()
 		}
 
 	}
 
 	this.draw = function(){
 		for (var i=0; i<this.nCircles; i++){
-			circles[i].draw()
+			this.circles[i].draw()
 		}
 	}
 }
