@@ -23,6 +23,7 @@ Depth:
 <script type="text/javascript">
 
 var xpos=0; ypos=0;
+var oldx=0; oldy=0;
 
 // from stackoverflow
 var w = window,
@@ -70,13 +71,16 @@ orientAxis = function() {
 };
 
 orientAndRotate = function() {
-	orientAxis();
+	if (oldx != xpos || oldy != ypos){
+		oldx = xpos;
+		oldy = ypos;
+		orientAxis();
+	}
 	myCircle.rotate();
 	myCircle.draw();
 };
 
-myCircle.rotate();
-myCircle.draw();
+myCircle.orientAndRotate(); // get things started in case there is a long interval
 
 
 document.getElementById('btn').onclick = function(){
@@ -84,7 +88,7 @@ document.getElementById('btn').onclick = function(){
 	console.log("clicked");
 }
 
-setInterval('orientAndRotate();',10);
+setInterval('orientAndRotate();',30);
 </script>
 
 

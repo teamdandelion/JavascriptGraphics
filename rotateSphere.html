@@ -2,7 +2,7 @@
 <head>
 <title> Dan draws a circle </title>
 <style type="text/css">
-body{background:#999999;color:#FF0;height:100%;margin:0;padding:0;width:100%;}
+body{background:#999999;color:#FF0;height:100%;margin:0;padding:0;width:100%;cursor:none;}
 b{position:absolute;}
 a{color:gold;}
 a:hover{color:#FF0;}
@@ -43,6 +43,17 @@ var mySphere = new Sphere(sym, originX, originY, originZ, radius, nPoints, nCirc
 //mySphere.changeAxis(1,0,0);
 console.log('sphere made');
 
+changeCursor = function(){
+	x = xpos - originX;
+	y = ypos - originY;
+	r = radius + 25;
+	if (x*x + y*y <= r*r){
+		document.body.style.cursor = 'none';
+	} else {
+		document.body.style.cursor = 'default';
+	}
+}
+
 move2z = function(newz) {
 	console.log('new z is ' + newz);
 	mySphere.move(200, 200, +newz);
@@ -53,7 +64,7 @@ orientAxis = function() {
 	x = xpos - originX;
 	y = ypos - originY;
 
-	if (Math.abs(x) < 10 && Math.abs(y) <10){
+	if (Math.abs(x) < 10 && Math.abs(y) < 10){
 		x = 0;
 		y = 0;
 		// avoid jitteryness near the origin
@@ -70,10 +81,11 @@ orientAxis = function() {
 	mySphere.changeAxis(x,y,-z);
 };
 
-orientAndRotate = function() {
+tick = function() {
 	orientAxis();
 	mySphere.rotate();
 	mySphere.draw();
+	changeCursor();
 };
 
 mySphere.rotate();
@@ -84,7 +96,7 @@ document.getElementById('btn').onclick = function(){
 	console.log("clicked");
 }
 
-setInterval('orientAndRotate();',30);
+setInterval('tick();',30);
 </script>
 
 
