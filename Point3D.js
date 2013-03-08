@@ -3,9 +3,10 @@ var sym = '.';
 var baseSize = 14;
 
 function Point3D(x, y, z, id){
+	console.log('point with id', id);
 	this.id = id;
 	this.pSize = baseSize;
-	document.write('<b id="' + id + '">' + sym +'</b>');
+	document.writeln('<p id="' + id + '">' + sym +'</b>');
 	s = document.getElementById(this.id).style;
 	s.position = 'absolute';
 	s.fontSize = 0 + 'px';
@@ -26,7 +27,15 @@ function Point3D(x, y, z, id){
 		// Set the point size based on the depth
 		// Increasing point size tends to shift the character to the right and down so we
 		// will introduce a corrective factor
-		s = document.getElementById(this.id).style;
+		e = document.getElementById(this.id);
+		
+		if (e == null){
+			console.log('bad point id:', this.id);
+			return;
+		}
+
+		s = e.style;
+
 		pSize = baseSize * defaultDepth / this.z;
 
 		s.left = this.x - pSize * .165;
@@ -45,5 +54,10 @@ function Point3D(x, y, z, id){
 		//console.log('fontSize set to ' + this.pSize + 'px');
 		s.zIndex = Math.floor(700-this.z); 
 	};
+
+	this.removeSelf = function(){
+		//e = document.getElementById(this.id);
+		//e.parentNode.removeChild(e);
+	}
 
 };

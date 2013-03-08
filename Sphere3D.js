@@ -101,6 +101,14 @@ function Sphere(x, y, z, radius, nPoints, nCircles, id, speed){
 			this.depths[i] = cirDepth;
 		};
 	}
+
+	this.setNumPoints = function(nPoints){
+		this.nPoints = nPoints;
+		for (var i=0; i<nCircles; i++){
+			this.circles[i].setNumPoints(nPoints);
+		}
+	};
+
 	this.init();
 };
 

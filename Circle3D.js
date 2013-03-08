@@ -21,6 +21,22 @@ function Circle3D(x, y, z, radius, nPoints, id, speed){
 		this.points.push(newPoint);
 	}
 
+	this.setNumPoints = function(nuPoints){
+		if (this.nPoints < nuPoints){
+			for (var i = this.nPoints; i < nuPoints; i++){
+				var newid = this.id + '.' + i;
+				var newPoint = new Point3D(0, 0, 0, newid);
+				this.points.push(newPoint);
+			}
+		} else if (this.nPoints > nuPoints){
+			while (this.nPoints > nuPoints){
+				this.nPoints--;
+				//this.points.pop().removeSelf();
+			}
+		}
+		this.nPoints = nuPoints;
+	}
+
 	this.move = function(x, y, z){
 		this.x = x;
 		this.y = y;
@@ -67,7 +83,7 @@ function Circle3D(x, y, z, radius, nPoints, id, speed){
 
 	simple eh?
 	*/
-		for (var i=0; i<nPoints; i++){
+		for (var i=0; i<this.nPoints; i++){
 			var angle, a, b;
 			angle = this.angularOffset + this.stepSize * i;
 			a = Math.cos(angle) * this.r;

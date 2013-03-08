@@ -21,6 +21,13 @@ Depth:
 <br>
 <input type="range" name="Radius" min="100" max="700" value="300" onchange="move2z(this.value)">
 <br>
+
+Number of Points: 
+<br>
+<input type="range" name="Radius" min="3" max="20" value="5" onchange="changeNumPoints(this.value)">
+<br>
+<br><br>
+
 <br><br>
 
 <input type="button" value="click me" id="btn">
@@ -43,11 +50,11 @@ var radius = 150;
 var originX = Math.floor(xwindow / 2);
 var originY = Math.floor(ywindow / 2);
 var originZ = 300;
-var nCircles = 20;
-var nPoints = 12;
+var nCircles = 5;
+var nPoints = 5;
 var sym = '.';
 
-var mySphere = new Sphere(originX, originY, originZ, radius, nPoints, nCircles, 0, .0001);
+var mySphere = new Sphere(originX, originY, originZ, radius, nPoints, nCircles, 0, .01);
 //mySphere.changeAxis(1,0,0);
 console.log('sphere made');
 
@@ -55,7 +62,6 @@ changeCursor = function(){
 	x = xpos - originX;
 	y = ypos - originY;
 	r = radius + 25;
-	console.log(r, x*x + y*y - r*r);
 	if (x*x + y*y <= r*r){
 		document.body.style.cursor = 'none';
 	} else {
@@ -72,6 +78,12 @@ changeRadius = function(newRadius){
 	radius = +newRadius;
 	mySphere.changeRadius(radius);
 };
+
+changeNumPoints = function(newPoints){
+	nPoints = Math.floor(+newPoints);
+	mySphere.setNumPoints(nPoints);
+};
+
 
 orientAxis = function() {
 	var x, y, z;
@@ -110,7 +122,7 @@ document.getElementById('btn').onclick = function(){
 	console.log("clicked");
 }
 
-setInterval('tick();',10);
+//setInterval('tick();',5000);
 </script>
 
 
