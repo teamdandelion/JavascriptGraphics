@@ -1,40 +1,44 @@
-function Circle3D(x, y, z, radius, nPoints, id, speed){
+function Circle3D(id){
 	// defaults to axis 0,0,1 (whole circle rotates at constant depth)
-	this.x = x;
-	this.y = y;
-	this.z = z;
-	this.r = radius;
-	this.nPoints = nPoints;
+	this.x = 0;
+	this.y = 0;
+	this.z = 0;
+	this.r = 50;
 	this.id = id;
 	this.points = [];
-	this.stepSize = 2 * Math.PI / this.nPoints;
+	this.nPoints = 0;
 
 	this.basis1 = [0,1,0];
 	this.basis2 = [0,0,1];
 
-	this.speed = speed;
 	this.angularOffset = 0;
 
-	for (var i=0; i<nPoints; i++){
-		var newid = this.id + '.' + i;
-		var newPoint = new Point3D(0, 0, 0, newid);
+	this.addPoint = function(){
+		var newid = this.id + '.Point' + this.nPoints;
+		var newPoint = new Point3D(newid);
 		this.points.push(newPoint);
-	}
+		this.nPoints++;
+	};
 
-	this.setNumPoints = function(nuPoints){
-		if (this.nPoints < nuPoints){
-			for (var i = this.nPoints; i < nuPoints; i++){
-				var newid = this.id + '.' + i;
-				var newPoint = new Point3D(0, 0, 0, newid);
-				this.points.push(newPoint);
-			}
-		} else if (this.nPoints > nuPoints){
-			while (this.nPoints > nuPoints){
-				this.nPoints--;
-				//this.points.pop().removeSelf();
-			}
+	this.removePoint = function(){
+		this.points.pop().removeSelf();
+		this.nPoints--;
+	};
+
+	this.setNumPoints = function(newNumPoints){
+		while (this.nPoints < newNumPoints){
+			this.addPoint();
 		}
-		this.nPoints = nuPoints;
+		while (this.nPoints > newNumPoints){
+			this.removePoint();
+		}
+		this.stepSize = 2 * Math.PI / this.nPoints;
+	};
+
+	this.removeSelf = function(){
+		while (this.nPoints > 0){
+			this.removePoint();
+		}
 	}
 
 	this.move = function(x, y, z){
@@ -55,10 +59,12 @@ function Circle3D(x, y, z, radius, nPoints, id, speed){
 		this.basis2 = bases[1];
 	};
 
-	this.rotate = function(){
-		this.angularOffset += speed;
-		this.angularOffset %= 2 * Math.PI;
-	};
+	// this.rotate = function(){
+	// 	this.angularOffset += speed;
+	// 	this.angularOffset %= 2 * Math.PI;
+	// };
+
+	this.setAngularOffset = function(angularOffset){this.angularOffset = angularOffset;}
 
 	// this.logPointLocations = function(){
 	// 	for (var i=0; i<nPoints; i++){

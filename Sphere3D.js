@@ -4,34 +4,66 @@ function Sphere(x, y, z, radius, nPoints, nCircles, id, speed){
 	this.z = z;
 	this.r = radius;
 	this.nPoints = nPoints;
-	this.nCircles = nCircles;
+	this.nCircles = 0;
 	this.id = id;
 	this.circles = [];
 	this.depths  = [];
 	this.speed = speed;
 	this.axis = [1, 0, 0];
+	this.angularOffset = 0;
 
 	this.init = function (){ 
 		this.topPoint = new Point3D(this.x + this.r, this.y, this.z, this.id + '.top');
 		this.botPoint = new Point3D(this.x - this.r, this.y, this.z, this.id + '.bot');
 
-		var circleSpacing = Math.PI / (nCircles+1);
-		for (var i=0; i<nCircles; i++){
-			var newId = this.id + '.' + i;
-			var angle = circleSpacing * (i+1);
-			var cirRadius = Math.sin(angle) * this.r;
-			var cirDepth = Math.cos(angle) * this.r;
-			//console.log('cRadius', cRadius, 'cirRadius', cirRadius);
-			this.addCircle(newId, cirDepth, cirRadius, nPoints, speed);
-		}
-		this.changeAxis(this.axis);
+		//var circleSpacing = Math.PI / (nCircles+1);
+		this.setNumCircles(nCircles);
+		// for (var i=0; i<nCircles; i++){
+		// 	var newId = this.id + '.Circle' + i;
+		// 	this.addCircle(newId, nPoints);
+		// }
+		// this.shapeSphere();
+		// this.changeAxis(this.axis);
 	};
 
-	this.addCircle = function(id, depth, radius, nPoints, speed){
-		var newCircle = new Circle3D(0,0,0, radius, nPoints, id, speed);
+	this.shapeSphere = function(){
+		circleSpacing = Math.PI / (this.nCircles+1);
+		//console.log('spacing:', circleSpacing);
+		for (var i=0; i<this.nCircles; i++){
+			angle = circleSpacing * (i+1);
+			cirRadius = Math.sin(angle) * this.r;
+			cirDepth = Math.cos(angle) * this.r;
+			this.circles[i].changeRadius(cirRadius);
+			this.circles[i].setNumPoints(this.nPoints);
+			this.depths[i] = cirDepth;
+		//	console.log('angle, depth: ', angle, cirDepth);
+		}
+		this.changeAxis(this.axis);
+	}
+
+	this.addCircle = function(){
+		var newid = this.id + '.Circle' + this.nCircles;
+		var newCircle = new Circle3D(newid);
 		this.circles.push(newCircle);
-		this.depths.push(depth);
-		//this.changeAxis(this.axis);
+		//this.depths.push(0);
+		this.nCircles++;
+		console.log('made a circle');
+	};
+
+	this.removeCircle = function(){
+		this.circles.pop().removeSelf();
+		this.depths.pop();
+		this.nCircles--;
+	}
+
+	this.setNumCircles = function(newNumCircles){
+		while (this.nCircles < newNumCircles){
+			this.addCircle();
+		}
+		while (this.nCircles > newNumCircles){
+			this.removeCircle();
+		}
+		this.shapeSphere();
 	};
 
 	this.changeAxis = function(abc){
@@ -50,8 +82,8 @@ function Sphere(x, y, z, radius, nPoints, nCircles, id, speed){
 
 		bases = generateBasis(a,b,c);
 
-		var n = nCircles/2;
-		for (var i=0; i<nCircles; i++){
+//		var n = nCircles/2;
+		for (var i=0; i < this.nCircles; i++){
 			var depth = this.depths[i];
 			this.circles[i].move(this.x + a*depth, this.y + b*depth, this.z + c*depth);
 			this.circles[i].changeBasis(bases);
@@ -68,16 +100,18 @@ function Sphere(x, y, z, radius, nPoints, nCircles, id, speed){
 		this.z = z;
 		this.topPoint.relativeMove(relativeX, relativeY, relativeZ);
 		this.botPoint.relativeMove(relativeX, relativeY, relativeZ);
-		for (var i=0; i<nCircles; i++){
+		for (var i=0; i<this.nCircles; i++){
 			this.circles[i].relativeMove(relativeX, relativeY, relativeZ);
 		}
 	};
 
 	this.rotate = function(){
+		this.angularOffset += this.speed;
+		this.angularOffset %= 2 * Math.PI;
 		for (var i=0; i<this.nCircles; i++){
-			this.circles[i].rotate()
+			this.circles[i].setAngularOffset(this.angularOffset);
 		}
-	}
+	};
 
 	this.draw = function(){
 		for (var i=0; i<this.nCircles; i++){
@@ -89,22 +123,23 @@ function Sphere(x, y, z, radius, nPoints, nCircles, id, speed){
 
 	this.changeRadius = function(radius){
 		this.r = radius;
-		var circleSpacing = Math.PI / (nCircles+1);
-		for (var i=0; i<nCircles; i++){
-			var angle = circleSpacing * (i+1);
-			// z^2 + cR^2 = r^2
-			// cR = sqrt(r^2 + z^2)
-			var cirRadius = Math.sin(angle) * this.r;
-			var cirDepth = Math.cos(angle) * this.r;
-			//console.log('cRadius', cRadius, 'cirRadius', cirRadius);
-			this.circles[i].changeRadius(cirRadius);
-			this.depths[i] = cirDepth;
-		};
-	}
+		// var circleSpacing = Math.PI / (this.nCircles+1);
+		// for (var i=0; i<this.nCircles; i++){
+		// 	var angle = circleSpacing * (i+1);
+		// 	// z^2 + cR^2 = r^2
+		// 	// cR = sqrt(r^2 + z^2)
+		// 	var cirRadius = Math.sin(angle) * this.r;
+		// 	var cirDepth = Math.cos(angle) * this.r;
+		// 	//console.log('cRadius', cRadius, 'cirRadius', cirRadius);
+		// 	this.circles[i].changeRadius(cirRadius);
+		// 	this.depths[i] = cirDepth;
+		this.shapeSphere();
+		
+	};
 
 	this.setNumPoints = function(nPoints){
 		this.nPoints = nPoints;
-		for (var i=0; i<nCircles; i++){
+		for (var i=0; i<this.nCircles; i++){
 			this.circles[i].setNumPoints(nPoints);
 		}
 	};
