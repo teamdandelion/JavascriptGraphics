@@ -80,8 +80,6 @@ function Sphere(id){
 		//console.log('a,b,c,n: ',a,b,c,norm);
 		var ar = a *r, br = b*r, cr = c*r;
 
-		console.log('top xyz:', this.x + ar, this.y + br, this.z + cr);
-		console.log('bot xyz:', this.x - ar, this.y - br, this.z - cr);
 
 		this.topPoint.move(this.x + a * r, this.y + b * r, this.z + c * r);
 		this.botPoint.move(this.x - a * r, this.y - b * r, this.z - c * r);

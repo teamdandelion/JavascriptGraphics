@@ -9,7 +9,7 @@ var depthScaling = true;
 
 function Point3D(id){
 	console.log('point with id', id);
-	this.element = document.createElement("p");
+	this.element = document.createElement("b");
 	this.element.id = id;
 	pointArea.appendChild(this.element);
 	text = document.createTextNode(".");
@@ -39,11 +39,10 @@ function Point3D(id){
 
 		if (depthScaling){
 			console.log('x,y,z: ', this.x, this.y, this.z);
-			pSize = baseSize * defaultDepth / this.z;
+			var pSize = baseSize * defaultDepth / this.z;
 			this.s.left = this.x - pSize * .165;
 			this.s.top  = this.y - pSize * .850;
 			this.s.fontSize = pSize + 'px';
-			console.log('psize, left, top: ', pSize, this.s.left, this.s.top);
 		} else {
 			this.s.left = this.x;
 			this.s.top  = this.y;
@@ -58,7 +57,6 @@ function Point3D(id){
 		o = Math.floor(o);
  
 		this.s.color = 'rgb(' + o + ', ' + o + ', 0)';
-		//console.log('fontSize set to ' + this.pSize + 'px');
 		this.s.zIndex = Math.floor(700-this.z); 
 	};
 

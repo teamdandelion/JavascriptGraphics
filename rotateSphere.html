@@ -25,15 +25,27 @@ Depth:
 
 <p id="number points range">
 Number of Points: 
-<br> <input type="range" name="nPoints" min="1" max="20" value="2" onchange="changeNumPoints(this.value)"> </p>
+<br> <input type="range" name="nPoints" min="1" max="30" value="15" onchange="changeNumPoints(this.value)"> </p>
 
 <p id="number circles range">
 Number of Circles: 
-<br> <input type="range" name="nCircles" min="1" max="20" value="1" onchange="mySphere.setNumCircles(+this.value)"> </p>
+<br> <input type="range" name="nCircles" min="1" max="30" value="15" onchange="mySphere.setNumCircles(+this.value)"> </p>
+
+<p id="speed range">
+Rotation speed
+<br> <input type="range" name="speed" min="1" max="1000" value="20" onchange="changeSpeed(+this.value)"> </p>
+
+<p id="fps">
+Target FPS 
+<br> <input type="range" name="FPS" min="1" max="100" value="20" onchange="changeFPS(+this.value)"> </p>
+
 
 <p id="pause button">
 <input type="button" value="Pause" id="pause">
 </p>
+
+<p id "info about free axis"> Press the space bar to lock the axis in place </p>
+
 
 
 <script src="Point3D.js"  type="text/javascript"></script>
@@ -50,15 +62,17 @@ var w = window,
     xwindow = w.innerWidth || e.clientWidth || g.clientWidth,
     ywindow = w.innerHeight|| e.clientHeight|| g.clientHeight;
 
-var radius = 150;
+var radius = 180;
 var originX = Math.floor(xwindow / 2);
 var originY = Math.floor(ywindow / 2);
 var originZ = 300;
-var nCircles = 0;
+var nCircles = 10;
 var nPoints = 15;
 var sym = '.';
 var stopped = false;
-var tolerance = 2000;
+var tolerance = 10;
+var freeAxis = true;
+
 
 var mySphere = new Sphere('Sphere0');
 
@@ -76,7 +90,7 @@ changeCursor = function(){
 	x = xpos - originX;
 	y = ypos - originY;
 	r = radius + 25;
-	if (x*x + y*y <= r*r){
+	if (freeAxis && x*x + y*y <= r*r){
 		document.body.style.cursor = 'none';
 	} else {
 		document.body.style.cursor = 'default';
@@ -98,8 +112,20 @@ changeNumPoints = function(newPoints){
 	mySphere.setNumPoints(nPoints);
 };
 
+changeSpeed = function(newSpeed){
+	if (newSpeed < 10){
+		newSpeed = 0;
+	}
+
+	newSpeed /= 10000;
+	mySphere.setSpeed(newSpeed);
+}
+
 
 orientAxis = function() {
+	if (!freeAxis){
+		return;
+	}
 	var x, y, z;
 	x = xpos - originX;
 	y = ypos - originY;
@@ -141,7 +167,21 @@ document.getElementById('pause').onclick = function(){
 }
 
 
-setInterval('tick();',500);
+interval = 1000/20;
+setInterval('tick();',1000);
+
+
+// function changeFPS(FPS){
+// 	clearInterval(interval);
+// 	interval = 1/FPS;
+// 	//setInterval('tick();', interval);
+// }
+
+document.onkeydown=function(event){
+	if (event.keyCode == 32){
+		freeAxis = !freeAxis;
+	}
+};
 </script>
 
 
