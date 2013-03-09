@@ -2,7 +2,7 @@
 <head>
 <title> Dan draws a circle </title>
 <style type="text/css">
-body{background:#999999;color:#FF0;height:100%;margin:0;padding:0;width:100%;cursor:none;}
+body{background:black;color:#FF0;height:100%;margin:0;padding:0;width:100%;cursor:none;}
 b{position:absolute;}
 a{color:gold;}
 a:hover{color:#FF0;}
@@ -14,21 +14,21 @@ address{bottom:10px;font-family:Georgia;font-style:normal;position:absolute;righ
 <p id="radius range">
 Radius: 
 <br>
-<input type="range" name="Radius" min="70" max="220" value="150" onchange="changeRadius(this.value)">
+<input type="range" name="Radius" min="70" max="250" value="180" onchange="changeRadius(this.value)">
 </p>
 
-<p id="depth range">
+<!-- <p id="depth range">
 Depth: 
 <br>
-<input type="range" name="Depth" min="100" max="700" value="300" onchange="move2z(this.value)">
-</p>
+<input type="range" name="Depth" min="200" max="700" value="300" onchange="move2z(this.value)">
+</p> -->
 
 <p id="number points range">
-Number of Points: 
+Number of Arcs: 
 <br> <input type="range" name="nPoints" min="1" max="30" value="15" onchange="changeNumPoints(this.value)"> </p>
 
 <p id="number circles range">
-Number of Circles: 
+Number of Layers: 
 <br> <input type="range" name="nCircles" min="1" max="30" value="15" onchange="mySphere.setNumCircles(+this.value)"> </p>
 
 <p id="speed range">
@@ -43,6 +43,13 @@ Target FPS
 <p id="pause button">
 <input type="button" value="Pause" id="pause">
 </p>
+
+
+<p id="depth button">
+<input type="button" value="Toggle Depth Perception" id="depth">
+</p>
+
+
 
 <p id "info about free axis"> Press the space bar to lock the axis in place </p>
 
@@ -166,16 +173,19 @@ document.getElementById('pause').onclick = function(){
 	console.log("clicked");
 }
 
+document.getElementById('depth').onclick = function(){
+	depthScaling = !depthScaling;
+}
 
 interval = 1000/20;
-setInterval('tick();',1000);
+intervalVar = setInterval('tick();',20);
 
 
-// function changeFPS(FPS){
-// 	clearInterval(interval);
-// 	interval = 1/FPS;
-// 	//setInterval('tick();', interval);
-// }
+function changeFPS(FPS){
+	clearInterval(intervalVar);
+	interval = 1000/FPS;
+	intervalVar = setInterval('tick();', interval);
+}
 
 document.onkeydown=function(event){
 	if (event.keyCode == 32){

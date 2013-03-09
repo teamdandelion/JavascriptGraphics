@@ -38,7 +38,7 @@ function Point3D(id){
 
 
 		if (depthScaling){
-			console.log('x,y,z: ', this.x, this.y, this.z);
+			//console.log('x,y,z: ', this.x, this.y, this.z);
 			var pSize = baseSize * defaultDepth / this.z;
 			this.s.left = this.x - pSize * .165;
 			this.s.top  = this.y - pSize * .850;
@@ -56,7 +56,7 @@ function Point3D(id){
 		if (o < 0  ) o = 0;
 		o = Math.floor(o);
  
-		this.s.color = 'rgb(' + o + ', ' + o + ', 0)';
+		this.s.color = 'rgb(' + o + ', ' + Math.floor(o/2) + ', 0)';
 		this.s.zIndex = Math.floor(700-this.z); 
 	};
 
