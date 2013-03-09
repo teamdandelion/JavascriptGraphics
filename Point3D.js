@@ -5,6 +5,7 @@ var pointArea = document.createElement("p");
 pointArea.id = "Point area";
 document.body.appendChild(pointArea);
 
+var depthScaling = true;
 
 function Point3D(id){
 	console.log('point with id', id);
@@ -34,12 +35,20 @@ function Point3D(id){
 		// Set the point size based on the depth
 		// Increasing point size tends to shift the character to the right and down so we
 		// will introduce a corrective factor
-		pSize = baseSize * defaultDepth / this.z;
 
-		this.s.left = this.x - pSize * .165;
-		this.s.top  = this.y - pSize * .850;
-		this.s.fontSize = pSize + 'px';
-		sf = Math.pow(defaultDepth / this.z, 3);
+
+		if (depthScaling){
+			console.log('x,y,z: ', this.x, this.y, this.z);
+			pSize = baseSize * defaultDepth / this.z;
+			this.s.left = this.x - pSize * .165;
+			this.s.top  = this.y - pSize * .850;
+			this.s.fontSize = pSize + 'px';
+			console.log('psize, left, top: ', pSize, this.s.left, this.s.top);
+		} else {
+			this.s.left = this.x;
+			this.s.top  = this.y;
+			this.s.fontSize = baseSize * 2 + 'px';
+		}
 
 		o = ((-180.0)/360) * this.z + 280;
 

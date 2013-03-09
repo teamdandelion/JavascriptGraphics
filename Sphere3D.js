@@ -1,23 +1,22 @@
-function Sphere(x, y, z, radius, nPoints, nCircles, id, speed){
-	this.x = x;
-	this.y = y;
-	this.z = z;
-	this.r = radius;
-	this.nPoints = nPoints;
-	this.nCircles = 0;
+function Sphere(id){
 	this.id = id;
+	this.x = 0;
+	this.y = 0;
+	this.z = 0;
+	this.r = 0;
+	this.nPoints = 0;
+	this.nCircles = 0;
 	this.circles = [];
 	this.depths  = [];
-	this.speed = speed;
+	this.speed = 0;
 	this.axis = [1, 0, 0];
 	this.angularOffset = 0;
 
 	this.init = function (){ 
-		this.topPoint = new Point3D(this.x + this.r, this.y, this.z, this.id + '.top');
-		this.botPoint = new Point3D(this.x - this.r, this.y, this.z, this.id + '.bot');
+		this.topPoint = new Point3D(this.id + '.top');
+		this.botPoint = new Point3D(this.id + '.bot');
 
 		//var circleSpacing = Math.PI / (nCircles+1);
-		this.setNumCircles(nCircles);
 		// for (var i=0; i<nCircles; i++){
 		// 	var newId = this.id + '.Circle' + i;
 		// 	this.addCircle(newId, nPoints);
@@ -25,6 +24,8 @@ function Sphere(x, y, z, radius, nPoints, nCircles, id, speed){
 		// this.shapeSphere();
 		// this.changeAxis(this.axis);
 	};
+
+	this.setSpeed = function(speed){this.speed = speed;};
 
 	this.shapeSphere = function(){
 		circleSpacing = Math.PI / (this.nCircles+1);
@@ -68,15 +69,20 @@ function Sphere(x, y, z, radius, nPoints, nCircles, id, speed){
 
 	this.changeAxis = function(abc){
 		this.axis = abc;
-		a = abc[0];
-		b = abc[1];
-		c = abc[2];
+		var a = abc[0];
+		var b = abc[1];
+		var c = abc[2];
 		var norm = Math.sqrt(a*a + b*b + c*c);
 		a /= norm;
 		b /= norm;
 		c /= norm;
-		r = this.r; // saves some space, this.r is kinda long
+		var r = this.r; // saves some space, this.r is kinda long
 		//console.log('a,b,c,n: ',a,b,c,norm);
+		var ar = a *r, br = b*r, cr = c*r;
+
+		console.log('top xyz:', this.x + ar, this.y + br, this.z + cr);
+		console.log('bot xyz:', this.x - ar, this.y - br, this.z - cr);
+
 		this.topPoint.move(this.x + a * r, this.y + b * r, this.z + c * r);
 		this.botPoint.move(this.x - a * r, this.y - b * r, this.z - c * r);
 
@@ -114,14 +120,14 @@ function Sphere(x, y, z, radius, nPoints, nCircles, id, speed){
 	};
 
 	this.draw = function(){
+		this.topPoint.draw();
+		this.botPoint.draw();
 		for (var i=0; i<this.nCircles; i++){
 			this.circles[i].draw();
-			this.topPoint.draw();
-			this.botPoint.draw();
 		}
 	};
 
-	this.changeRadius = function(radius){
+	this.setRadius = function(radius){
 		this.r = radius;
 		// var circleSpacing = Math.PI / (this.nCircles+1);
 		// for (var i=0; i<this.nCircles; i++){

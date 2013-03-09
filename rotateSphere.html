@@ -54,13 +54,21 @@ var radius = 150;
 var originX = Math.floor(xwindow / 2);
 var originY = Math.floor(ywindow / 2);
 var originZ = 300;
-var nCircles = 15;
+var nCircles = 0;
 var nPoints = 15;
 var sym = '.';
 var stopped = false;
-var tolerance = 20;
+var tolerance = 2000;
 
-var mySphere = new Sphere(originX, originY, originZ, radius, nPoints, nCircles, 'Sphere0', .01);
+var mySphere = new Sphere('Sphere0');
+
+mySphere.move(originX, originY, originZ);
+mySphere.setSpeed(.01);
+mySphere.setNumCircles(nCircles);
+mySphere.setNumPoints(nPoints);
+mySphere.setRadius(radius);
+mySphere.shapeSphere();
+
 //mySphere.changeAxis(1,0,0);
 console.log('sphere made');
 
@@ -82,7 +90,7 @@ move2z = function(newz) {
 
 changeRadius = function(newRadius){
 	radius = +newRadius;
-	mySphere.changeRadius(radius);
+	mySphere.setRadius(radius);
 };
 
 changeNumPoints = function(newPoints){
@@ -133,7 +141,7 @@ document.getElementById('pause').onclick = function(){
 }
 
 
-setInterval('tick();',50);
+setInterval('tick();',500);
 </script>
 
 
